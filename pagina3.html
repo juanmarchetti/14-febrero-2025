@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Noche Estrellada Realista y Dinámica</title>
+  <style>
+    /* Estilos globales */
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      height: 100vh;
+      position: relative;
+      font-family: Arial, sans-serif;
+    }
+    /* Luna realista */
+    .moon {
+      position: absolute;
+      top: 8%;
+      right: 8%;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle at 30% 30%, #fff, #e0e0e0 70%, transparent 80%);
+      border-radius: 50%;
+      box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.2);
+      filter: contrast(1.2);
+      animation: moonFloat 4s ease-in-out infinite alternate;
+    }
+    @keyframes moonFloat {
+      from { transform: translateY(0); }
+      to { transform: translateY(-20px); }
+    }
+    /* Contenedor de estrellas */
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    /* Wrapper para cada estrella con movimiento sutil (drift) */
+    .star-wrapper {
+      position: absolute;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    @keyframes drift {
+      0%   { transform: translate(0, 0); }
+      50%  { transform: translate(3px, -3px); }
+      100% { transform: translate(0, 0); }
+    }
+    /* Estilos para las estrellas */
+    .star {
+      display: block;
+      background: radial-gradient(circle, white 80%, rgba(255,255,255,0) 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 8px 2px rgba(255,255,255,0.5);
+      transition: transform 0.3s ease, background 0.3s ease;
+      cursor: pointer;
+      pointer-events: auto;
+      animation: twinkle 3s infinite ease-in-out;
+    }
+    @keyframes twinkle {
+      0%   { opacity: 0.8; transform: scale(1); }
+      50%  { opacity: 0.3; transform: scale(1.2); }
+      100% { opacity: 0.8; transform: scale(1); }
+    }
+    /* Estrellas en forma de diamante */
+    .star.diamond {
+      transform: rotate(45deg);
+    }
+    /* Estrella especial (para el poema) */
+    .star.special {
+      width: 10px !important;
+      height: 10px !important;
+      background: radial-gradient(circle, gold 70%, rgba(255,215,0,0) 100%);
+      box-shadow: 0 0 12px 4px gold;
+    }
+    /* Efecto al hacer clic en la estrella */
+    .star.active {
+      transform: scale(1.8);
+      background: yellow;
+    }
+    /* Carta con el poema */
+    .letter {
+      display: none;
+      position: absolute;
+      max-width: 320px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px 30px;
+      border-radius: 10px;
+      text-align: center;
+      font-family: 'Great Vibes', cursive;
+      font-size: 24px;
+      color: #333;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+      animation: fadeIn 0.5s ease forwards;
+      z-index: 10;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    /* Botón de cierre dentro de la carta */
+    .letter .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 8px;
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #555;
+    }
+    .letter .close-btn:hover {
+      color: #000;
+    }
+    /* Montañas realistas */
+    .mountain {
+      position: absolute;
+      bottom: 0;
+      width: 110%;
+      height: 35%;
+      background: url('img/mountain.png') no-repeat center bottom;
+      background-size: cover;
+      filter: brightness(0.8) contrast(1.1);
+    }
+    /* Persona en el paisaje */
+    .person {
+      position: absolute;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90px;
+      height: 120px;
+      background: url('img/person.png') no-repeat center;
+      background-size: contain;
+    }
+    /* Botón de regreso */
+    .btn {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff4081;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+    .btn:hover {
+      background: #e03670;
+    }
+    /* Estrella fugaz (Shooting Star) */
+    .shooting-star {
+      position: absolute;
+      width: 3px;
+      height: 120px;
+      background: linear-gradient(45deg, white, rgba(255,255,255,0));
+      opacity: 0;
+      filter: drop-shadow(0 0 8px white);
+      z-index: 5;
+    }
+    @keyframes shoot {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--x-move), var(--y-move));
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Luna -->
+  <div class="moon"></div>
+  <!-- Contenedor de estrellas -->
+  <div class="stars" id="stars"></div>
+  <!-- Carta del poema con botón para cerrar -->
+  <div class="letter" id="letter">
+    <button class="close-btn" id="closeLetter">&times;</button>
+    <p>Mi amor, cada estrella en el cielo me recuerda a ti, pero solo una brilla con el mensaje de mi corazón. Te amo. 💖</p>
+  </div>
+  <!-- Montañas -->
+  <div class="mountain"></div>
+  <!-- Persona -->
+  <div class="person"></div>
+  <!-- Botón para volver -->
+  <a href="index.php" class="btn">Volver al inicio</a>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const starContainer = document.getElementById("stars");
+      const letter = document.getElementById("letter");
+      const closeLetterBtn = document.getElementById("closeLetter");
+      const numStars = 150;
+      let letterVisible = false;
+      // Selecciona aleatoriamente la estrella especial
+      const specialStarIndex = Math.floor(Math.random() * numStars);
+      
+      for (let i = 0; i < numStars; i++) {
+        // Crea el contenedor (wrapper) para cada estrella
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("star-wrapper");
+        const topPos = Math.random() * 80;
+        const leftPos = Math.random() * 100;
+        wrapper.style.top = topPos + "%";
+        wrapper.style.left = leftPos + "%";
+        wrapper.style.animationDelay = Math.random() * 12 + "s";
+        
+        // Crea la estrella con tamaño variable
+        const star = document.createElement("div");
+        star.classList.add("star");
+        const size = Math.random() * 3 + 2; // Entre 2px y 5px
+        star.style.width = size + "px";
+        star.style.height = size + "px";
+        star.style.animationDelay = Math.random() * 3 + "s";
+        
+        if (i === specialStarIndex) {
+          star.dataset.special = "true";
+          star.classList.add("special");
+          // Al hacer clic en la estrella especial se alterna (toggle) la carta del poema
+          wrapper.addEventListener("click", (e) => {
+            e.stopPropagation();
+            star.classList.toggle("active");
+            if (!letterVisible) {
+              letter.style.display = "block";
+              // Ubica la carta cerca de la posición de la estrella
+              letter.style.top = wrapper.style.top;
+              letter.style.left = wrapper.style.left;
+              letterVisible = true;
+            } else {
+              letter.style.display = "none";
+              letterVisible = false;
+            }
+          });
+        } else {
+          // Con 50% de probabilidad, darle forma de diamante
+          if (Math.random() < 0.5) {
+            star.classList.add("diamond");
+          }
+        }
+        
+        wrapper.appendChild(star);
+        starContainer.appendChild(wrapper);
+      }
+      
+      // Permitir cerrar la carta del poema con el botón de cierre
+      closeLetterBtn.addEventListener("click", () => {
+        letter.style.display = "none";
+        letterVisible = false;
+      });
+      
+      // Función para crear una estrella fugaz con posición y dirección aleatorias
+      function createShootingStar() {
+        const shootingStar = document.createElement("div");
+        shootingStar.classList.add("shooting-star");
+        // Posición inicial aleatoria: se ubicará en la parte superior del cielo
+        const startTop = Math.random() * 50; // Para que aparezca en la zona superior
+        const startLeft = Math.random() * 100;
+        shootingStar.style.top = startTop + "%";
+        shootingStar.style.left = startLeft + "%";
+        
+        // Definir movimiento aleatorio:
+        // Escoger un ángulo entre 30 y 70 grados (convertido a radianes)
+        const angle = (Math.random() * 40 + 30) * (Math.PI / 180);
+        // Definir una distancia de movimiento (entre 200 y 400 píxeles)
+        const distance = Math.random() * 200 + 200;
+        const xMove = Math.cos(angle) * distance;
+        const yMove = Math.sin(angle) * distance;
+        shootingStar.style.setProperty('--x-move', xMove + "px");
+        shootingStar.style.setProperty('--y-move', yMove + "px");
+        
+        shootingStar.style.animation = "shoot 1s ease-out forwards";
+        document.body.appendChild(shootingStar);
+        
+        shootingStar.addEventListener("animationend", () => {
+          shootingStar.remove();
+        });
+      }
+      
+      // Función para programar la creación de estrellas fugaces en intervalos aleatorios
+      function scheduleShootingStar() {
+        const randomDelay = Math.random() * 5000 + 3000; // Intervalo entre 3 y 8 segundos
+        setTimeout(() => {
+          createShootingStar();
+          scheduleShootingStar();
+        }, randomDelay);
+      }
+      
+      // Iniciar la programación de las estrellas fugaces
+      scheduleShootingStar();
+    });
+  </script>
+</body>
+</html>

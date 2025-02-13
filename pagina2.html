@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poemas de Amor Interactivo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Georgia&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primario: #ff6f61;
+            --color-secundario: #ff4757;
+            --sombra-suave: 0 4px 15px rgba(255, 79, 87, 0.1);
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe6ee 100%);
+            color: #4a4a4a;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+            color: white;
+            padding: 4rem 2rem;
+            box-shadow: var(--sombra-suave);
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin: 0;
+        }
+
+        #app {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .boton-principal {
+            background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .poema-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--sombra-suave);
+            animation: aparecer 0.5s ease-out;
+        }
+
+        .boton-corazon {
+            color: #ff6f61;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .boton-eliminar {
+            color: red;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .favoritos-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-radius: 10px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .favoritos-popup.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .cerrar-popup {
+            background: red;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .cerrar-popup:hover {
+            background: darkred;
+        }
+
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Poemas de Amor</h1>
+        <p id="descripcion">Genera poemas mágicos y comparte tu amor</p>
+    </header>
+
+    <div id="app">
+        <button class="boton-principal" onclick="generarPoema()">✨ Crear Nuevo Poema</button>
+        <div id="poemas-container"></div>
+        <button class="boton-principal" onclick="mostrarFavoritos()">❤️ Ver Favoritos</button>
+    </div>
+
+    <div id="favoritos-popup" class="favoritos-popup">
+        <h2>Poemas Favoritos</h2>
+        <div id="favoritos-lista"></div>
+        <button class="cerrar-popup" onclick="cerrarFavoritos()">Cerrar</button>
+    </div>
+
+    <script>
+        let poemasGenerados = [];
+        let favoritos = [];
+        let poemasDisponibles = [];
+
+        // Cargar poemas desde JSON
+        fetch('poemas.json')
+            .then(response => response.json())
+            .then(data => {
+                poemasDisponibles = data.poemas;
+                mostrarLoading(false);
+            })
+            .catch(error => {
+                console.error('Error cargando poemas:', error);
+                mostrarError();
+            });
+
+        function generarPoema() {
+            if (poemasDisponibles.length === 0) {
+                alert('Ya se han mostrado todos los poemas. Reiniciando...');
+                poemasDisponibles = [...data.poemas]; // Reiniciar poemas disponibles
+            }
+            
+            const randomIndex = Math.floor(Math.random() * poemasDisponibles.length);
+            const poema = poemasDisponibles[randomIndex];
+            
+            const poemaGenerado = {
+                id: Date.now(),
+                texto: poema.replace(/\n/g, '<br>'),
+                likes: 0,
+                favorito: false,
+                comentarios: [],
+                fecha: new Date().toISOString()
+            };
+
+            poemasGenerados.unshift(poemaGenerado);
+            poemasDisponibles.splice(randomIndex, 1); // Eliminar el poema mostrado
+
+            guardarEnLocalStorage();
+            renderizarPoemas();
+        }
+
+        function guardarEnLocalStorage() {
+            localStorage.setItem('poemasGuardados', JSON.stringify(poemasGenerados));
+        }
+
+        function cargarDesdeLocalStorage() {
+            const guardados = localStorage.getItem('poemasGuardados');
+            if (guardados) {
+                poemasGenerados = JSON.parse(guardados);
+                renderizarPoemas();
+            }
+        }
+
+        function renderizarPoemas() {
+            const container = document.getElementById('poemas-container');
+            container.innerHTML = '';
+
+            poemasGenerados.forEach(poema => {
+                const poemaCard = document.createElement('div');
+                poemaCard.classList.add('poema-card');
+                poemaCard.innerHTML = `
+                    <p>${poema.texto}</p>
+                    <span class="boton-corazon" onclick="toggleFavorito(${poema.id})">${poema.favorito ? '💖' : '🤍'}</span>
+                    <span class="boton-eliminar" onclick="eliminarPoema(${poema.id})">❌</span>
+                `;
+                container.appendChild(poemaCard);
+            });
+        }
+
+        function toggleFavorito(id) {
+            const poema = poemasGenerados.find(p => p.id === id);
+            poema.favorito = !poema.favorito;
+
+            if (poema.favorito) {
+                favoritos.push(poema);
+            } else {
+                favoritos = favoritos.filter(p => p.id !== id);
+            }
+
+            guardarEnLocalStorage();
+            renderizarPoemas();
+        }
+
+        function eliminarPoema(id) {
+            poemasGenerados = poemasGenerados.filter(p => p.id !== id);
+            guardarEnLocalStorage();
+            renderizarPoemas();
+        }
+
+        function mostrarFavoritos() {
+            const popup = document.getElementById('favoritos-popup');
+            const lista = document.getElementById('favoritos-lista');
+            lista.innerHTML = '';
+
+            favoritos.forEach(poema => {
+                const poemaCard = document.createElement('div');
+                poemaCard.classList.add('poema-card');
+                poemaCard.innerHTML = `<p>${poema.texto}</p>`;
+                lista.appendChild(poemaCard);
+            });
+
+            popup.classList.add('show');
+        }
+
+        function cerrarFavoritos() {
+            const popup = document.getElementById('favoritos-popup');
+            popup.classList.remove('show');
+        }
+
+        window.addEventListener('DOMContentLoaded', cargarDesdeLocalStorage);
+    </script>
+    <button class="boton-volver" onclick="window.location.href='index.php'">↩ Volver a Inicio</button>
+
+    <style>
+        .boton-volver {
+            background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: block;
+            margin: 2rem auto;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .boton-volver:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 79, 87, 0.3);
+        }
+    </style>
+    
+</body>
+</html>
