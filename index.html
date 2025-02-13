@@ -1,183 +1,225 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Amor</title>
-    <style>
-        /* CSS General */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página de Amor</title>
+  <style>
+    /* CSS General */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
 
-        body {
-            background: linear-gradient(135deg, #ff6f61, #ff9a8b);
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
+    body {
+      background: linear-gradient(135deg, #ff6f61, #ff9a8b);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      position: relative; /* Para posicionar los corazones flotantes */
+      overflow-x: hidden;
+    }
 
-        .container {
-            text-align: center;
-            max-width: 800px;
-            padding: 2rem;
-            border-radius: 20px;
-            background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
-        }
+    .container {
+      text-align: center;
+      max-width: 800px;
+      width: 90%;
+      padding: 2rem;
+      border-radius: 20px;
+      background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
+    }
 
-        /* Título */
-        .title {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            letter-spacing: 1px;
-        }
+    /* Título */
+    .title {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      letter-spacing: 1px;
+    }
 
-        /* Descripción */
-        .description {
-            font-size: 1.3rem;
-            color: #fff;
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.6;
-            font-style: italic;
-        }
+    /* Descripción */
+    .description {
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+      font-style: italic;
+    }
 
-        /* Contenedor de botones de navegación */
-        .button-container {
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
+    /* Contenedor de botones de navegación */
+    .button-container {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
 
-        .btn {
-            background: #ff4757;
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: background 0.3s, transform 0.3s;
-            display: inline-block;
-        }
+    .btn {
+      background: #ff4757;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: background 0.3s, transform 0.3s;
+      display: inline-block;
+    }
 
-        .btn:hover {
-            background: #ff6f61;
-            transform: translateY(-5px);
-        }
+    .btn:hover {
+      background: #ff6f61;
+      transform: translateY(-5px);
+    }
 
-        /* Corazones flotantes */
-        .heart-container {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-        }
+    /* Corazones flotantes */
+    .heart-container {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
 
-        .heart {
-            width: 60px;
-            height: 60px;
-            background-color: transparent;
-            border: 5px solid #fff;
-            border-radius: 50%;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.3s ease, background-color 0.3s;
-        }
+    .heart {
+      width: 60px;
+      height: 60px;
+      background-color: transparent;
+      border: 5px solid #fff;
+      border-radius: 50%;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease, background-color 0.3s;
+    }
 
-        .heart:before, .heart:after {
-            content: "";
-            position: absolute;
-            width: 60px;
-            height: 100px;
-            background-color: #ff4757;
-            border-radius: 50%;
-            top: 0;
-            left: 0;
-        }
+    .heart:before,
+    .heart:after {
+      content: "";
+      position: absolute;
+      width: 60px;
+      height: 100px;
+      background-color: #ff4757;
+      border-radius: 50%;
+      top: 0;
+      left: 0;
+    }
 
-        .heart:before {
-            transform: rotate(-45deg);
-            transform-origin: 100% 100%;
-        }
+    .heart:before {
+      transform: rotate(-45deg);
+      transform-origin: 100% 100%;
+    }
 
-        .heart:after {
-            transform: rotate(45deg);
-            transform-origin: 0 100%;
-        }
+    .heart:after {
+      transform: rotate(45deg);
+      transform-origin: 0 100%;
+    }
 
-        .heart:hover {
-            transform: scale(1.2);
-            background-color: #ff6f61;
-        }
+    .heart:hover {
+      transform: scale(1.2);
+      background-color: #ff6f61;
+    }
 
-        /* Fondo de corazones flotantes */
-        .floating-hearts {
-            position: absolute;
-            top: -20%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: -1;
-            animation: float 10s infinite ease-in-out;
-        }
+    /* Fondo de corazones flotantes */
+    .floating-hearts {
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: -1;
+      animation: float 10s infinite ease-in-out;
+    }
 
-        .floating-hearts::after {
-            content: "❤️";
-            font-size: 10rem;
-            opacity: 0.1;
-            animation: floatHeart 10s infinite ease-in-out;
-        }
+    .floating-hearts::after {
+      content: "❤️";
+      font-size: 10rem;
+      opacity: 0.1;
+      animation: floatHeart 10s infinite ease-in-out;
+    }
 
-        @keyframes float {
-            0% { top: -10%; opacity: 1; }
-            50% { top: 30%; opacity: 0.6; }
-            100% { top: -10%; opacity: 1; }
-        }
+    @keyframes float {
+      0% { top: -10%; opacity: 1; }
+      50% { top: 30%; opacity: 0.6; }
+      100% { top: -10%; opacity: 1; }
+    }
 
-        @keyframes floatHeart {
-            0% { transform: translateY(0); opacity: 0.1; }
-            50% { transform: translateY(-30px); opacity: 1; }
-            100% { transform: translateY(0); opacity: 0.1; }
-        }
+    @keyframes floatHeart {
+      0% { transform: translateY(0); opacity: 0.1; }
+      50% { transform: translateY(-30px); opacity: 1; }
+      100% { transform: translateY(0); opacity: 0.1; }
+    }
 
-    </style>
+    /* Adaptación para dispositivos móviles */
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+        max-width: 95%;
+      }
+      .title {
+        font-size: 2.5rem;
+      }
+      .description {
+        font-size: 1rem;
+        padding: 0 0.5rem;
+      }
+      .btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+      }
+      .heart {
+        width: 40px;
+        height: 40px;
+        border-width: 3px;
+      }
+      .heart:before,
+      .heart:after {
+        width: 40px;
+        height: 67px;
+      }
+      .floating-hearts::after {
+        font-size: 6rem;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1 class="title">Te Amo Más de lo que las Palabras Pueden Expresar</h1>
+    <p class="description">
+      Eres mi todo. Este es un espacio donde mi amor resuena para ti.
+    </p>
 
-    <div class="container">
-        <h1 class="title">Te Amo Más de lo que las Palabras Pueden Expresar</h1>
-        <p class="description">
-            Eres mi todo. Este es un espacio donde mi amor resuena para ti.
-        </p>
-
-        <!-- Botones de navegación -->
-        <div class="button-container">
-            <a href="pagina1.html" class="btn">Razones</a>
-            <a href="pagina2.html" class="btn">Poemas</a>
-            <a href="pagina3.html" class="btn">Noche Estrellada</a>
-        </div>
-
-        <!-- Corazones flotantes -->
-        <div class="heart-container">
-            <div class="heart"></div>
-            <div class="heart"></div>
-            <div class="heart"></div>
-            <div class="heart"></div>
-            <div class="heart"></div>
-        </div>
+    <!-- Botones de navegación -->
+    <div class="button-container">
+      <a href="pagina1.html" class="btn">Razones</a>
+      <a href="pagina2.html" class="btn">Poemas</a>
+      <a href="pagina3.html" class="btn">Noche Estrellada</a>
     </div>
+
+    <!-- Corazones flotantes -->
+    <div class="heart-container">
+      <div class="heart"></div>
+      <div class="heart"></div>
+      <div class="heart"></div>
+      <div class="heart"></div>
+      <div class="heart"></div>
+    </div>
+  </div>
+
+  <!-- Corazón flotante en el fondo -->
+  <div class="floating-hearts"></div>
+</body>
+</html>
+
 
     <script>
         // Agregar interactividad si es necesario
