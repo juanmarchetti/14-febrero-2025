@@ -1,28 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Chat en HTML</title>
-    <script>
-        function cargarChat() {
-            fetch("chat.php")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("chat-container").innerHTML = data;
-                })
-                .catch(error => console.error("Error al cargar el chat:", error));
-        }
-        
-        window.onload = cargarChat; // Carga el chat cuando la página se abra
-    </script>
-</head>
-<body>
-    <h1>Mi Página con Chat</h1>
-    <div id="chat-container">
-        <p>Cargando chat...</p>
-    </div>
-</body>
-</html>
+
 
 <!DOCTYPE html>
 <html lang="es">
