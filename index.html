@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -158,20 +155,6 @@
     </style>
 </head>
 <body>
-    <!-- Contenedor del chat -->
-<div id="chat-container"></div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        fetch("chat.php")
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById("chat-container").innerHTML = data;
-            })
-            .catch(error => console.error("Error cargando el chat:", error));
-    });
-</script>
-
 
     <div class="container">
         <h1 class="title">Te Amo Más de lo que las Palabras Pueden Expresar</h1>
@@ -202,3 +185,4 @@
 
 </body>
 </html>
+
